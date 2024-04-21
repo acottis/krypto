@@ -41,22 +41,54 @@ pub fn mod_inverse(element: u64, modulus: u64) -> u64 {
     answer
 }
 
-pub fn pow_mod(base: u64, exp: u64, modulus: u64) -> u64 {
-    let mut total = base;
-    for i in 1..exp {
-        total = (total * base) % modulus
-    }
-    return total;
-}
-
 #[inline(always)]
 pub fn phi_prime(prime: u64) -> u64 {
     prime - 1
 }
 
+pub trait PowMod {
+    fn pow_mod(self, exp: Self, modulus: Self) -> Self;
+}
+
+macro_rules! impl_pow_mod {
+    ($ty:ty) => {
+        impl PowMod for $ty {
+            fn pow_mod(self, exp: Self, modulus: Self) -> Self {
+                let mut total = self;
+                for i in 1..exp {
+                    total = (total * self) % modulus
+                }
+                total
+            }
+        }
+    };
+}
+
+impl_pow_mod!(i16);
+impl_pow_mod!(i32);
+impl_pow_mod!(i64);
+impl_pow_mod!(i128);
+impl_pow_mod!(u16);
+impl_pow_mod!(u32);
+impl_pow_mod!(u64);
+impl_pow_mod!(u128);
+
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    fn pow_mod_u64() {
+        assert_eq!(u64::pow_mod(2, 4, 5), 1);
+        assert_eq!(u64::pow_mod(4, 16, 23), 12);
+        assert_eq!(u64::pow_mod(69, 69, 43), 8);
+    }
+    #[test]
+    fn pow_mod_u32() {
+        assert_eq!(u32::pow_mod(2, 4, 5), 1);
+        assert_eq!(u32::pow_mod(4, 16, 23), 12);
+        assert_eq!(u32::pow_mod(69, 69, 43), 8);
+    }
 
     #[test]
     fn test_carmichael() {
@@ -121,12 +153,5 @@ mod test {
         assert_eq!(mod_inverse(3, 11), 4);
         assert_eq!(mod_inverse(7, 13), 2);
         assert_eq!(mod_inverse(9, 23), 18);
-    }
-
-    #[test]
-    fn test_powmod() {
-        assert_eq!(pow_mod(2, 4, 5), 1);
-        assert_eq!(pow_mod(4, 16, 23), 12);
-        assert_eq!(pow_mod(69, 69, 43), 8);
     }
 }

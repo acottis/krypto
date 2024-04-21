@@ -33,10 +33,10 @@ impl Rsa {
     }
 
     pub fn encrypt(&self, message: u64) -> u64 {
-        pow_mod(message, self.encrypt_key, self.n)
+        message.pow_mod(self.encrypt_key, self.n)
     }
     pub fn decrypt(&self, cipher_text: u64) -> u64 {
-        pow_mod(cipher_text, self.decrypt_key, self.n)
+        cipher_text.pow_mod(self.decrypt_key, self.n)
     }
 }
 
