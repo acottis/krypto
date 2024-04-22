@@ -50,24 +50,37 @@ pub trait PowMod {
     fn pow_mod(self, exp: Self, modulus: Self) -> Self;
 }
 
+// Optimised version of the below
+// let mut result = self;
+// for i in 1..exp {
+//     result = (result * self) % modulus
+// }
+// result
 macro_rules! impl_pow_mod {
     ($ty:ty) => {
         impl PowMod for $ty {
-            fn pow_mod(self, exp: Self, modulus: Self) -> Self {
-                let mut total = self;
-                for i in 1..exp {
-                    total = (total * self) % modulus
+            fn pow_mod(mut self, mut exp: Self, modulus: Self) -> Self {
+                let mut result = 1;
+                while exp > 0 {
+                    if exp % 2 == 1 {
+                        result = (result * self) % modulus;
+                    }
+                    exp >>= 1;
+                    self = (self * self) % modulus;
                 }
-                total
+
+                result
             }
         }
     };
 }
 
+impl_pow_mod!(i8);
 impl_pow_mod!(i16);
 impl_pow_mod!(i32);
 impl_pow_mod!(i64);
 impl_pow_mod!(i128);
+impl_pow_mod!(u8);
 impl_pow_mod!(u16);
 impl_pow_mod!(u32);
 impl_pow_mod!(u64);
