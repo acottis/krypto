@@ -3,26 +3,26 @@ use crate::math;
 use math::*;
 
 struct Rsa {
-    n: u64,
-    encrypt_key: u64,
-    decrypt_key: u64,
+    n: u128,
+    encrypt_key: u128,
+    decrypt_key: u128,
 }
 
 impl Rsa {
-    pub fn new(prime_p: u64, prime_q: u64) -> Self {
+    pub fn new(prime_p: u128, prime_q: u128) -> Self {
         let n = prime_p * prime_q;
         // let phi = phi_prime(prime_p) * phi_prime(prime_q);
-        let carmichaels = lcm(phi_prime(prime_p), phi_prime(prime_q));
+        let carmichaels = u128::lcm(prime_p.phi_prime(), prime_q.phi_prime());
 
         // 1 and 2 are never valid -- 2 < e < charmichaels(n)
         let mut encrypt_key = 2;
         while encrypt_key < carmichaels {
-            if gcd(encrypt_key, carmichaels) == 1 {
+            if u128::gcd(encrypt_key, carmichaels) == 1 {
                 break;
             };
             encrypt_key += 1;
         }
-        let decrypt_key = mod_inverse(encrypt_key, carmichaels);
+        let decrypt_key = encrypt_key.mod_inverse(carmichaels);
         println!("{carmichaels}, {encrypt_key}, {decrypt_key}");
 
         Self {
@@ -32,10 +32,10 @@ impl Rsa {
         }
     }
 
-    pub fn encrypt(&self, message: u64) -> u64 {
+    pub fn encrypt(&self, message: u128) -> u128 {
         message.pow_mod(self.encrypt_key, self.n)
     }
-    pub fn decrypt(&self, cipher_text: u64) -> u64 {
+    pub fn decrypt(&self, cipher_text: u128) -> u128 {
         cipher_text.pow_mod(self.decrypt_key, self.n)
     }
 }
