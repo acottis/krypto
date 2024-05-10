@@ -23,7 +23,6 @@ impl Rsa {
             encrypt_key += 1;
         }
         let decrypt_key = encrypt_key.mod_inverse(carmichaels);
-        println!("{carmichaels}, {encrypt_key}, {decrypt_key}");
 
         Self {
             n,
@@ -56,6 +55,14 @@ mod tests {
     fn test_bigger_rsa() {
         let cipher = Rsa::new(61, 53);
         let message = 65;
+        let cipher_text = cipher.encrypt(message);
+        let decrypted_message = cipher.decrypt(cipher_text);
+        assert_eq!(message, decrypted_message);
+    }
+
+    fn test_massive_rsa() {
+        let cipher = Rsa::new(6370752774720629, 4947954645050393);
+        let message = 235236;
         let cipher_text = cipher.encrypt(message);
         let decrypted_message = cipher.decrypt(cipher_text);
         assert_eq!(message, decrypted_message);
