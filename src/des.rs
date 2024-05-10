@@ -19,27 +19,25 @@ impl Sdes {
         Self { key1, key2 }
     }
 
-    fn encyrpt(&self, mut bits: u8) -> u8 {
-        bits = permutation_ip(bits);
-        bits = step(self.key1, bits);
-        // Reverse the nibbles
-        bits = (bits >> 4) | ((bits & 0b1111) << 4);
-        bits = step(self.key2, bits);
-        bits = permutation_inverse_ip(bits);
-        bits
+    fn encrypt(&self, mut bits: u8) -> u8 {
+        calculate(bits, self.key1, self.key2)
     }
 
-    fn decyrpt(&self, mut bits: u8) -> u8 {
-        bits = permutation_ip(bits);
-
-        bits = step(self.key2, bits);
-        // reverse the nibbles
-        bits = (bits >> 4) | ((bits & 0b1111) << 4);
-        bits = step(self.key1, bits);
-
-        bits = permutation_inverse_ip(bits);
-        bits
+    fn decyrpt(&self, bits: u8) -> u8 {
+        calculate(bits, self.key2, self.key1)
     }
+}
+
+fn calculate(mut bits: u8, first_key: u8, second_key: u8) -> u8 {
+    bits = permutation_ip(bits);
+
+    bits = step(first_key, bits);
+    // reverse the nibbles
+    bits = (bits >> 4) | ((bits & 0b1111) << 4);
+    bits = step(second_key, bits);
+
+    bits = permutation_inverse_ip(bits);
+    bits
 }
 
 fn step(key: u8, mut bits: u8) -> u8 {
@@ -179,7 +177,7 @@ mod tests {
     fn test_sdes_encryption() {
         let key = 0b1010000010;
         let sdes = Sdes::new(key);
-        let ciphertext = sdes.encyrpt(0b10010111);
+        let ciphertext = sdes.encrypt(0b10010111);
 
         assert_eq!(ciphertext, 0b00111000)
     }
