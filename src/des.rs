@@ -19,7 +19,7 @@ impl Sdes {
         Self { key1, key2 }
     }
 
-    fn encrypt(&self, mut bits: u8) -> u8 {
+    fn encrypt(&self, bits: u8) -> u8 {
         calculate(bits, self.key1, self.key2)
     }
 
@@ -58,7 +58,7 @@ fn sbox_index(bits: u8) -> usize {
     ((row * 4) + col) as usize
 }
 
-fn sboxes(mut bits: u8) -> u8 {
+fn sboxes(bits: u8) -> u8 {
     const S0: [u8; 16] = [1, 0, 3, 2, 3, 2, 1, 0, 0, 2, 1, 3, 3, 1, 3, 2];
     const S1: [u8; 16] = [0, 1, 2, 3, 2, 0, 1, 3, 3, 0, 1, 0, 2, 1, 0, 3];
 
@@ -94,7 +94,10 @@ fn shl_u5(bits: u16) -> u16 {
 }
 
 fn permutation_4(bits: u8) -> u8 {
-    (bits & 0b1000) >> 3 | (bits & 0b0100) << 1 | (bits & 0b0010) | (bits & 0b0001) << 2
+    (bits & 0b1000) >> 3
+        | (bits & 0b0100) << 1
+        | (bits & 0b0010)
+        | (bits & 0b0001) << 2
 }
 
 fn permutation_ep(bits: u8) -> u8 {
