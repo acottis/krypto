@@ -187,7 +187,7 @@ const S_BOXES: [[u32; 256]; 4] = [
     ],
 ];
 
-struct BlowFish {
+pub struct BlowFish {
     subkeys: [u32; 18],
     sboxes: [[u32; 256]; 4],
 }
@@ -265,7 +265,7 @@ impl BlowFish {
         (a.wrapping_add(b) ^ c).wrapping_add(d)
     }
 
-    fn encrypt_block(&self, block: &[u8; 8]) -> u64 {
+    pub fn encrypt_block(&self, block: &[u8; 8]) -> u64 {
         let mut lhs = (block[0] as u32) << 24
             | (block[1] as u32) << 16
             | (block[2] as u32) << 8
@@ -279,7 +279,7 @@ impl BlowFish {
         (lhs as u64) << 32 | rhs as u64
     }
 
-    fn decrypt_block(&self, block: &[u8; 8]) -> u64 {
+    pub fn decrypt_block(&self, block: &[u8; 8]) -> u64 {
         let mut lhs = (block[0] as u32) << 24
             | (block[1] as u32) << 16
             | (block[2] as u32) << 8

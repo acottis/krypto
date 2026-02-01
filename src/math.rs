@@ -22,19 +22,16 @@ pub fn phi(n: u64) -> u64 {
     count
 }
 
-pub trait ModulusInverse {
+pub trait ModInverse {
     fn mod_inverse(self, modulus: Self) -> Self;
 }
 
 macro_rules! impl_mod_inverse {
     ($ty:ty) => {
-        impl ModulusInverse for $ty {
+        impl ModInverse for $ty {
+            /// Only works for primes
             fn mod_inverse(self, modulus: Self) -> Self {
-                let mut result = 1;
-                while (self * result) % modulus != 1 {
-                    result += 1;
-                }
-                result
+                self.pow_mod(modulus - 2, modulus)
             }
         }
     };
